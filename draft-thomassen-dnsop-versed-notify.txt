@@ -1,0 +1,107 @@
+
+
+
+
+DNSOP Working Group                                          J. Stenstam
+Internet-Draft                           The Swedish Internet Foundation
+Intended status: Standards Track                            P. Thomassen
+Expires: 15 May 2023                   deSEC, Secure Systems Engineering
+                                                        11 November 2022
+
+
+                             Versed NOTIFY
+               draft-thomassen-dnsop-versed-notify-latest
+
+Abstract
+
+   This document specifies Versed NOTIFY.
+
+   TO BE REMOVED: This document is being collaborated on in Github at:
+   https://github.com/peterthomassen/draft-thomassen-dnsop-versed-notify
+   (https://github.com/peterthomassen/draft-thomassen-dnsop-versed-
+   notify).  The most recent working version of the document, open
+   issues, etc. should all be available there.  The authors (gratefully)
+   accept pull requests.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 15 May 2023.
+
+Copyright Notice
+
+   Copyright (c) 2022 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Requirements Notation
+   2.  Body
+   3.  Security Considerations
+   4.  Change History (to be removed before publication)
+   Authors' Addresses
+
+1.  Introduction
+
+   TODO
+
+   Readers are expected to be familiar with DNSSEC, including
+   [@!RFC4033], [@!RFC4034], [@!RFC4035], [@!RFC6781], [@!RFC7344],
+   [@!RFC7477], [@!RFC7583], and [@!RFC8901].
+
+1.1.  Requirements Notation
+
+   The key words "*MUST*", "*MUST NOT*", "*REQUIRED*", "*SHALL*",
+   "*SHALL NOT*", "*SHOULD*", "*SHOULD NOT*", "*RECOMMENDED*", "*NOT
+   RECOMMENDED*", "*MAY*", and "*OPTIONAL*" in this document are to be
+   interpreted as described in BCP 14 [@!RFC2119] [@!RFC8174] when, and
+   only when, they appear in all capitals, as shown here.
+
+2.  Body
+
+   TODO
+
+3.  Security Considerations
+
+   TODO
+
+   {backmatter}
+
+4.  Change History (to be removed before publication)
+
+   *  draft-thomassen-dnsop-versed-notify-00
+
+      Initial public draft.
+
+Authors' Addresses
+
+   Johan Stenstam
+   The Swedish Internet Foundation
+   Email: johan.stenstam@internetstiftelsen.se
+
+
+   Peter Thomassen
+   deSEC, Secure Systems Engineering
+   Email: peter@desec.io
