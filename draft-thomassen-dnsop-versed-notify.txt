@@ -74,7 +74,7 @@ Table of Contents
    7.  Timing Considerations
    8.  Open Questions
      8.1.  SRV vs new record type
-     8.2.  Does multi-signer setups also need a NOTIFY(NS)?
+     8.2.  Do multi-signer setups also need a NOTIFY(NS)?
    9.  Out of Scope
    10. Security Considerations
    11. Change History (to be removed before publication)
@@ -244,8 +244,8 @@ Table of Contents
 
    In the zone "parent.":
 
-   _cds-notifications.parent.  IN SRV n m 53 cds-scanner.parent. _csync-
-   notifications.parent.  IN SRV n m 53 csync-scanner.parent.
+   _cds-notifications.parent.  IN SRV n m 53 scanner.parent. _csync-
+   notifications.parent.  IN SRV n m 53 scanner.parent.
 
 4.2.  How to Interpret CDS/CDNSKEY and CSYNC Notifications
 
@@ -370,11 +370,11 @@ Table of Contents
    case it could be that a new record type would provide a cleaner
    solution to all the new types of notification signaling.  Eg.:
 
-   parent.  IN NOTIFY CDS 53 cds-scanner.parent. parent.  IN NOTIFY
-   CSYNC 53 csync-scanner.parent. child.parent.  IN NOTIFY DNSKEY 5300
+   parent.  IN NOTIFY CDS 53 scanner.parent. parent.  IN NOTIFY CSYNC 53
+   scanner.parent. child.parent.  IN NOTIFY DNSKEY 5300
    music.service.provider.
 
-8.2.  Does multi-signer setups also need a NOTIFY(NS)?
+8.2.  Do multi-signer setups also need a NOTIFY(NS)?
 
    This can be argued both ways.
 
