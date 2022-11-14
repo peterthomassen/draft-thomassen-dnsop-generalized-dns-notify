@@ -5,8 +5,8 @@
 DNSOP Working Group                                          J. Stenstam
 Internet-Draft                           The Swedish Internet Foundation
 Intended status: Standards Track                            P. Thomassen
-Expires: 17 May 2023                   deSEC, Secure Systems Engineering
-                                                        13 November 2022
+Expires: 18 May 2023                   deSEC, Secure Systems Engineering
+                                                        14 November 2022
 
 
                      Generalized DNS Notifications
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 May 2023.
+   This Internet-Draft will expire on 18 May 2023.
 
 Copyright Notice
 
@@ -170,8 +170,8 @@ Table of Contents
    is only a very small number of the signed delegations that will have
    updated the CDS or CDNSKEY record between two scanning runs.
 
-   Frequent scanning: costly.  Infrequent scanning: slower convergence
-   (i.e. delay until the DS in the parent is updated).
+   Frequent scanning is costly.  Infrequent scanning causes slower
+   convergence (i.e. delay until the DS in the parent is updated).
 
 3.2.  CSYNC Scanners
 
@@ -179,12 +179,12 @@ Table of Contents
    large number of delegations vs infrequent updates to the CSYNC record
    in the child zones.
 
-   Frequent scanning: costly.  Infrequent scanning: slower convergence
-   (i.e. updated delegation information in the parent).
+   Frequent scanning is costly.  Infrequent scanning causes slower
+   convergence (i.e. updated delegation information in the parent).
 
 3.3.  Multi-Signer Setups
 
-   Draft-foo-bar-mutli-signer describes processes for managing signed
+   Draft-foo-bar-multi-signer describes processes for managing signed
    zones using multiple semi-independent "signers" (i.e. services that
    take an unsigned zone, sign it using unique DNSKEYs and publish the
    zone on the public Internet.  The most common current setup for
@@ -240,7 +240,7 @@ Table of Contents
    the contents of its own zone the simplest solution is for the parent
    to publish the address where it prefers to have notifications sent.
    To be slightly more general than just using an address record we
-   propose to use SRV records, as they are well suited to this:
+   propose to use SRV records, as they are well suited to this.
 
    In the zone "parent.":
 
