@@ -1195,9 +1195,6 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
                 <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-srv-vs-new-record-type" class="internal xref">SRV vs new record type</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-do-multi-signer-setups-also" class="internal xref">Do multi-signer setups also need a NOTIFY(NS)?</a></p>
-</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
@@ -1207,10 +1204,13 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-change-history-to-be-remove" class="internal xref">Change History (to be removed before publication)</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-change-history-to-be-remove" class="internal xref">Change History (to be removed before publication)</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1236,9 +1236,9 @@ inefficiencies.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">There are no DNS protocol changes introduced by this document.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">There are, however, proposals for how to interpret a wider range of
 DNS messages that are already allowed (but not used) by the protocol.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">Readers are expected to be familiar with DNSSEC, including [@!RFC4033],
-[@!RFC4034], [@!RFC4035], [@!RFC6781], [@!RFC7344], [@!RFC7477], [@!RFC7583],
-and [@!RFC8901].<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-6">Readers are expected to be familiar with DNSSEC, including <span>[<a href="#RFC4033" class="cite xref">RFC4033</a>]</span>,
+<span>[<a href="#RFC4034" class="cite xref">RFC4034</a>]</span>, <span>[<a href="#RFC4035" class="cite xref">RFC4035</a>]</span>, <span>[<a href="#RFC6781" class="cite xref">RFC6781</a>]</span>, <span>[<a href="#RFC7344" class="cite xref">RFC7344</a>]</span>, <span>[<a href="#RFC7477" class="cite xref">RFC7477</a>]</span>,
+<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span>, and <span>[<a href="#RFC8901" class="cite xref">RFC8901</a>]</span>.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <div id="requirements-notation">
 <section id="section-1.1">
         <h3 id="name-requirements-notation">
@@ -1247,8 +1247,8 @@ and [@!RFC8901].<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1.1-1">The key words "<strong>MUST</strong>", "<strong>MUST NOT</strong>", "<strong>REQUIRED</strong>", "<strong>SHALL</strong>", "<strong>SHALL
 NOT</strong>", "<strong>SHOULD</strong>", "<strong>SHOULD NOT</strong>", "<strong>RECOMMENDED</strong>", "<strong>NOT
 RECOMMENDED</strong>", "<strong>MAY</strong>", and "<strong>OPTIONAL</strong>" in this document are to be
-interpreted as described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when,
-they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only
+when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1399,10 +1399,12 @@ address where it prefers to have notifications sent. To be slightly
 more general than just using an address record we propose to use SRV
 records, as they are well suited to this.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.1-2">In the zone "parent.":<a href="#section-4.1-2" class="pilcrow">¶</a></p>
-<p id="section-4.1-3"><code>
+<div class="alignLeft art-text artwork" id="section-4.1-3">
+<pre>
 _cds-notifications.parent.   IN SRV n m  53 scanner.parent.
 _csync-notifications.parent. IN SRV n m  53 scanner.parent.
-</code><a href="#section-4.1-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-4.1-3" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 <div id="how-to-interpret-cds-and-csync-notifications">
@@ -1472,10 +1474,12 @@ multi-signer controller) has the ability to insert or modify RRsets in
 the child zone. Therefore the controller should be able to insert a
 record that documents the wanted address for DNSKEY notifications.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">In analogy with the other cases, but here in the zone "child.parent.":<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3"><code>
+<div class="alignLeft art-text artwork" id="section-5.1-3">
+<pre>
 _dnskey-notification.child.parent. IN SRV n m 53 scanner.signerA.
 _dnskey-notification.child.parent. IN SRV n m 53 scanner.signerB.
-</code><a href="#section-5.1-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-5.1-3" class="pilcrow">¶</a>
+</div>
 <p id="section-5.1-4">should act as a trigger for the signer that whenever there are changes
 to the DNSKEY RRset it should send a corresponding NOTIFY(DNSKEY) to
 all signers that have signaled interest via insertion of SRV records
@@ -1569,30 +1573,13 @@ the new type rather than the standard SRV RRtype that occurs in
 completely other scenarios than are described here. If that is the
 case it could be that a new record type would provide a cleaner
 solution to all the new types of notification signaling. Eg.:<a href="#section-8.1-2" class="pilcrow">¶</a></p>
-<p id="section-8.1-3"><code>
+<div class="alignLeft art-text artwork" id="section-8.1-3">
+<pre>
 parent.         IN NOTIFY  CDS     53   scanner.parent.
 parent.         IN NOTIFY  CSYNC   53   scanner.parent.
 child.parent.   IN NOTIFY  DNSKEY  5300 music.service.provider.
-</code><a href="#section-8.1-3" class="pilcrow">¶</a></p>
-</section>
+</pre><a href="#section-8.1-3" class="pilcrow">¶</a>
 </div>
-<div id="do-multi-signer-setups-also-need-a-notifyns">
-<section id="section-8.2">
-        <h3 id="name-do-multi-signer-setups-also">
-<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-do-multi-signer-setups-also" class="section-name selfRef">Do multi-signer setups also need a NOTIFY(NS)?</a>
-        </h3>
-<p id="section-8.2-1">This can be argued both ways.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">Against: The NS RRset (and possibly any in-bailiwick nameserver
-addresses) is part of the unsigned zone and must therefore be kept in
-sync regardless of any notifications.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
-<p id="section-8.2-3">For: The typical multi-signer use case is where the unsigned zone is
-sent to more than one DNS service provider that both signs the zone
-and serves the resulting zone. For the DNS service provider to be able
-to serve the zone it is preferable to have the ability to control the
-names and addresses of the nameservers providing the service.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
-<p id="section-8.2-4">If the conclusion is that NOTIFY(NS) is important for multi-signer
-then it is not difficult to add using the same design as for
-NOTIFY(DNSKEY).<a href="#section-8.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1636,27 +1623,73 @@ is the same as for the original NOTIFY(SOA), which has never been
 found to be useful for amplification attacks.<a href="#section-10-4" class="pilcrow">¶</a></p>
 <p id="section-10-5">In any case, NOTIFY consumers MAY configure rate limits to address
 concerns about the impact of unsolicited NOTIFY messages.<a href="#section-10-5" class="pilcrow">¶</a></p>
-<p id="section-10-6">{backmatter}<a href="#section-10-6" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="change-history-to-be-removed-before-publication">
 <section id="section-11">
+      <h2 id="name-normative-references">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+      </h2>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+      <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4033">[RFC4033]</dt>
+      <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"DNS Security Introduction and Requirements"</span>, <span class="seriesInfo">RFC 4033</span>, <span class="seriesInfo">DOI 10.17487/RFC4033</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4033">https://www.rfc-editor.org/rfc/rfc4033</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4034">[RFC4034]</dt>
+      <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"Resource Records for the DNS Security Extensions"</span>, <span class="seriesInfo">RFC 4034</span>, <span class="seriesInfo">DOI 10.17487/RFC4034</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4034">https://www.rfc-editor.org/rfc/rfc4034</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4035">[RFC4035]</dt>
+      <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"Protocol Modifications for the DNS Security Extensions"</span>, <span class="seriesInfo">RFC 4035</span>, <span class="seriesInfo">DOI 10.17487/RFC4035</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4035">https://www.rfc-editor.org/rfc/rfc4035</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6781">[RFC6781]</dt>
+      <dd>
+<span class="refAuthor">Kolkman, O.</span>, <span class="refAuthor">Mekking, W.</span>, and <span class="refAuthor">R. Gieben</span>, <span class="refTitle">"DNSSEC Operational Practices, Version 2"</span>, <span class="seriesInfo">RFC 6781</span>, <span class="seriesInfo">DOI 10.17487/RFC6781</span>, <time datetime="2012-12" class="refDate">December 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6781">https://www.rfc-editor.org/rfc/rfc6781</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7344">[RFC7344]</dt>
+      <dd>
+<span class="refAuthor">Kumari, W.</span>, <span class="refAuthor">Gudmundsson, O.</span>, and <span class="refAuthor">G. Barwood</span>, <span class="refTitle">"Automating DNSSEC Delegation Trust Maintenance"</span>, <span class="seriesInfo">RFC 7344</span>, <span class="seriesInfo">DOI 10.17487/RFC7344</span>, <time datetime="2014-09" class="refDate">September 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7344">https://www.rfc-editor.org/rfc/rfc7344</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7477">[RFC7477]</dt>
+      <dd>
+<span class="refAuthor">Hardaker, W.</span>, <span class="refTitle">"Child-to-Parent Synchronization in DNS"</span>, <span class="seriesInfo">RFC 7477</span>, <span class="seriesInfo">DOI 10.17487/RFC7477</span>, <time datetime="2015-03" class="refDate">March 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7477">https://www.rfc-editor.org/rfc/rfc7477</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7583">[RFC7583]</dt>
+      <dd>
+<span class="refAuthor">Morris, S.</span>, <span class="refAuthor">Ihren, J.</span>, <span class="refAuthor">Dickinson, J.</span>, and <span class="refAuthor">W. Mekking</span>, <span class="refTitle">"DNSSEC Key Rollover Timing Considerations"</span>, <span class="seriesInfo">RFC 7583</span>, <span class="seriesInfo">DOI 10.17487/RFC7583</span>, <time datetime="2015-10" class="refDate">October 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7583">https://www.rfc-editor.org/rfc/rfc7583</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8901">[RFC8901]</dt>
+    <dd>
+<span class="refAuthor">Huque, S.</span>, <span class="refAuthor">Aras, P.</span>, <span class="refAuthor">Dickinson, J.</span>, <span class="refAuthor">Vcelak, J.</span>, and <span class="refAuthor">D. Blacka</span>, <span class="refTitle">"Multi-Signer DNSSEC Models"</span>, <span class="seriesInfo">RFC 8901</span>, <span class="seriesInfo">DOI 10.17487/RFC8901</span>, <time datetime="2020-09" class="refDate">September 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8901">https://www.rfc-editor.org/rfc/rfc8901</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<div id="change-history-to-be-removed-before-publication">
+<section id="appendix-A">
       <h2 id="name-change-history-to-be-remove">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-change-history-to-be-remove" class="section-name selfRef">Change History (to be removed before publication)</a>
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-change-history-to-be-remove" class="section-name selfRef">Change History (to be removed before publication)</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-11-1.1">draft-thomassen-dnsop-generalized-dns-notifications-00<a href="#section-11-1.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-A-1.1">draft-thomassen-dnsop-generalized-dns-notifications-00<a href="#appendix-A-1.1" class="pilcrow">¶</a>
 </li>
       </ul>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-11-2.1">
-          <p id="section-11-2.1.1">Initial public draft.<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="appendix-A-2.1">
+          <p id="appendix-A-2.1.1">Initial public draft.<a href="#appendix-A-2.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-A">
+<section id="appendix-B">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
