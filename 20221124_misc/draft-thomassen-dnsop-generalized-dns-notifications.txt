@@ -185,10 +185,10 @@ Table of Contents
 
 3.3.  Multi-Signer Setups
 
-   Draft-foo-bar-multi-signer describes processes for managing signed
-   zones using multiple semi-independent "signers" (i.e. services that
-   take an unsigned zone, sign it using unique DNSKEYs and publish the
-   zone on the public Internet).  The most common current setup for
+   [I-D.wisser-dnssec-automation] describes processes for managing
+   signed zones using multiple semi-independent "signers" (i.e. services
+   that take an unsigned zone, sign it using unique DNSKEYs and publish
+   the zone on the public Internet).  The most common current setup for
    multi-signer uses a "multi-signer controller", which is a separate
    service responsible for keeping the signing and delegation
    information in sync across multiple signers.
@@ -433,6 +433,12 @@ Table of Contents
    concerns about the impact of unsolicited NOTIFY messages.
 
 11.  Normative References
+
+   [I-D.wisser-dnssec-automation]
+              Wisser, U. and S. Huque, "DNSSEC automation", Work in
+              Progress, Internet-Draft, draft-wisser-dnssec-automation-
+              03, 6 March 2022, <https://datatracker.ietf.org/doc/html/
+              draft-wisser-dnssec-automation-03>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
