@@ -1178,9 +1178,6 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
                 <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-how-to-interpret-dnskey-not" class="internal xref">How to Interpret DNSKEY Notifications</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
-                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-open-question-for-dnskey-no" class="internal xref">Open Question For DNSKEY Notifications</a></p>
-</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
@@ -1194,6 +1191,9 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
                 <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-srv-vs-new-record-type" class="internal xref">SRV vs new record type</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-open-question-for-dnskey-no" class="internal xref">Open Question For DNSKEY Notifications</a></p>
 </li>
             </ul>
 </li>
@@ -1338,18 +1338,18 @@ in the child zones.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-1"><span>[<a href="#I-D.wisser-dnssec-automation" class="cite xref">I-D.wisser-dnssec-automation</a>]</span> describes processes for managing signed
 zones using multiple semi-independent "signers" (i.e. services that
 take an unsigned zone, sign it using unique DNSKEYs and publish the
-zone on the public Internet). The most common current setup for
+zone on the public Internet). The setup most commonly discussed for
 multi-signer uses a "multi-signer controller", which is a separate
 service responsible for keeping the signing and delegation information
 in sync across multiple signers.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">To keep information in sync the controller must scan the signers for
+<p id="section-3.3-2">To keep information in sync, the signers need to be scanned for
 current information about the DNSKEY RRset in each signer. The problem
 is that modern "signers" will typically do DNSKEY rollovers
 (especially ZSK rollovers) automatically without informing anyone
 else, because a single-signer setup is often assume (in which case the
 ZSK rollover is a matter completely internal to the signer).<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">In the multi-signer case, this is not a correct assumption. The
-multi-signer controller therefore must poll frequently to minimize
+<p id="section-3.3-3">In the multi-signer case, this is not a correct assumption. It is
+therefore necessary to run frequent polls frequently to minimize
 the time window between one signer changing its version of the DNSKEY
 RRset and the controller noticing and re-synchronizing all signers.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
 <p id="section-3.3-4">Frequent scanning: costly. Infrequent scanning: slower convergence
@@ -1398,7 +1398,7 @@ its own zone the simplest solution is for the parent to publish the
 address where it prefers to have notifications sent. To be slightly
 more general than just using an address record we propose to use SRV
 records, as they are well suited to this.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">In the zone "parent.":<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">In the zone <code>parent.</code>:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.1-3">
 <pre>
 _cds-notifications.parent.   IN SRV n m  53 scanner.parent.
@@ -1473,7 +1473,7 @@ multi-signer setups to work is that at least one external party (the
 multi-signer controller) has the ability to insert or modify RRsets in
 the child zone. Therefore the controller should be able to insert a
 record that documents the wanted address for DNSKEY notifications.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">In analogy with the other cases, but here in the zone "child.parent.":<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">In analogy with the other cases, but here in the zone <code>child.parent.</code>:<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5.1-3">
 <pre>
 _dnskey-notification.child.parent. IN SRV n m 53 scanner.signerA.
@@ -1498,19 +1498,6 @@ action. In a multi-signer setup, though, this hint provides the
 recipient of the notification with the same three options as in the
 NOTIFY(CDS) and NOTIFY(CSYNC) cases: schedule an immediate check,
 delay regular checks and ignore.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="open-question-for-dnskey-notifications">
-<section id="section-5.3">
-        <h3 id="name-open-question-for-dnskey-no">
-<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-open-question-for-dnskey-no" class="section-name selfRef">Open Question For DNSKEY Notifications</a>
-        </h3>
-<p id="section-5.3-1">In a multi-signer setup there are multiple signers. How will the
-multi-signer controller know which signer sent the notification? As
-the number of signers for a particular zone is low (typically 2 or
-possibly 3), there is no major problem caused by not knowing which
-signer sent the notification and instead always check all the signers
-for updates to the DNSKEY RRset.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1580,6 +1567,19 @@ parent.         IN NOTIFY  CSYNC   53   scanner.parent.
 child.parent.   IN NOTIFY  DNSKEY  5300 music.service.provider.
 </pre><a href="#section-8.1-3" class="pilcrow">¶</a>
 </div>
+</section>
+</div>
+<div id="open-question-for-dnskey-notifications">
+<section id="section-8.2">
+        <h3 id="name-open-question-for-dnskey-no">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-open-question-for-dnskey-no" class="section-name selfRef">Open Question For DNSKEY Notifications</a>
+        </h3>
+<p id="section-8.2-1">In a multi-signer setup there are multiple signers. How will the
+multi-signer controller know which signer sent the notification? As
+the number of signers for a particular zone is low (typically 2 or
+possibly 3), there is no major problem caused by not knowing which
+signer sent the notification and instead always check all the signers
+for updates to the DNSKEY RRset.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
