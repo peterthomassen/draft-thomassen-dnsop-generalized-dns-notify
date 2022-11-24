@@ -1410,22 +1410,40 @@ _csync-notifications.parent. IN SRV n m  53 scanner.parent.
         <h3 id="name-how-to-interpret-cds-and-cs">
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-how-to-interpret-cds-and-cs" class="section-name selfRef">How to Interpret CDS and CSYNC Notifications</a>
         </h3>
-<p id="section-4.2-1">On receipt of a NOTIFY(CDS) for a particular child zone at the
-published address for CDS notifications the parent has the option of
-scheduling an immediate check of the CDS and CDNSKEY RRsets as
-published by that particular child zone. If the parent does this the
-convergence time (time for publication of a new CDS until propagation
-of the corresponding DS) will decrease significantly, thereby
-providing improved service to the child zone.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">At its option the parent may also choose not to scan that particular
-child, at least not for some time, as that child is apparently able to
-send CDS notifications when it is rolling its KSK. This will decrease
-the scanning effort for the parent.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
-<p id="section-4.2-3">A third option is to ignore the notification, in which case the system
-works exactly as before.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.2-4">On receipt of a NOTIFY(CSYNC) to the published address for CSYNC
-notifications the parent has exactly the same options to choose among
-as for the NOTIFY(CDS).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">Upon receipt of a NOTIFY(CDS) for a particular child zone at the
+published address for CDS notifications, the parent, roughly
+speaking, has three options:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.2-2">
+<li id="section-4.2-2.1">
+            <p id="section-4.2-2.1.1">Schedule an immediate check of the CDS and CDNSKEY RRsets as
+published by that particular child zone. If the parent does this
+the convergence time (time for publication of a new CDS until
+propagation of the corresponding DS) will decrease
+significantly, thereby providing improved service to the child
+zone.<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2.1.2">
+The parent MAY keep state about children which are known to send
+NOTIFY(CDS) messages, and reduce the periodic scanning frequency
+accordingly (e.g. to every two weeks).
+If a CDS/CDNSKEY change is then detected, the parent SHOULD clear
+that state and revert to the default scanning schedule.
+Parents introducing CDS/CDNSKEY scanning support at the same time
+as NOTIFY(CDS) support are not in danger of breaking children's
+scanning assumption, and MAY therefore us a low-frequency
+scanning schedule in default mode.<a href="#section-4.2-2.1.2" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.2-2.2">Choose not to scan that particular child, at least not for some
+time, as that child is apparently able to send CDS notifications
+when it is rolling its KSK.
+This will decrease the scanning effort for the parent.<a href="#section-4.2-2.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-4.2-2.3">Ignore the notification, in which case the system works exactly
+as before.<a href="#section-4.2-2.3" class="pilcrow">¶</a>
+</li>
+        </ol>
+<p id="section-4.2-3">Upon receipt of a NOTIFY(CSYNC) to the published address for CSYNC
+notifications, the parent has exactly the same options to choose among
+as for the NOTIFY(CDS).<a href="#section-4.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
