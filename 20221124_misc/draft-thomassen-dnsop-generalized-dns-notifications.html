@@ -1607,7 +1607,7 @@ affect the behaviour of the recipient of the NOTIFY other than by
 changing the timing for when different checks are initiated.<a href="#section-10-1" class="pilcrow">¶</a></p>
 <p id="section-10-2">This mechanism and security model is reused for all the generalized
 NOTIFY messages.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">Another consideration that is necessary is whether generalized DNS
+<p id="section-10-3">Another consideration is whether generalized DNS
 Notifications can be used as an amplification attack. The answer seems
 to be "NO", because the size of the generalized NOTIFY messages is
 mostly equal to the size of the response and it is also mostly equal
@@ -1616,7 +1616,9 @@ CSYNC or DNSKEY RRset).<a href="#section-10-3" class="pilcrow">¶</a></p>
 <p id="section-10-4">Hence the amplification attack potential of generalized Notifications
 is the same as for the original NOTIFY(SOA), which has never been
 found to be useful for amplification attacks.<a href="#section-10-4" class="pilcrow">¶</a></p>
-<p id="section-10-5">{backmatter}<a href="#section-10-5" class="pilcrow">¶</a></p>
+<p id="section-10-5">In any case, NOTIFY consumers MAY configure rate limits to address
+concerns about the impact of unsolicited NOTIFY messages.<a href="#section-10-5" class="pilcrow">¶</a></p>
+<p id="section-10-6">{backmatter}<a href="#section-10-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="change-history-to-be-removed-before-publication">
