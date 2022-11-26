@@ -1428,8 +1428,8 @@ published address for CDS notifications, the parent has two options:<a href="#se
             <p id="section-4.2-2.1.1">Schedule an immediate check of the CDS and CDNSKEY RRsets as
 published by that particular child zone.<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
 <p id="section-4.2-2.1.2">
-The parent MAY keep state about children which are known to send
-NOTIFY(CDS) messages, and reduce the periodic scanning frequency
+The parent MAY reset the scanning timer for children for which
+NOTIFY(CDS) is received, or reduce the periodic scanning frequency
 accordingly (e.g. to every two weeks).
 This will decrease the scanning effort for the parent.
 If a CDS/CDNSKEY change is then detected (without having received

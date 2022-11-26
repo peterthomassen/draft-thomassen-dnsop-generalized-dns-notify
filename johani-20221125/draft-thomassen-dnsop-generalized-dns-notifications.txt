@@ -272,13 +272,13 @@ Table of Contents
    1.  Schedule an immediate check of the CDS and CDNSKEY RRsets as
        published by that particular child zone.
 
-       The parent MAY keep state about children which are known to send
-       NOTIFY(CDS) messages, and reduce the periodic scanning frequency
-       accordingly (e.g. to every two weeks).  This will decrease the
-       scanning effort for the parent.  If a CDS/CDNSKEY change is then
-       detected (without having received a notification), the parent
-       SHOULD clear that state and revert to the default scanning
-       schedule.
+       The parent MAY reset the scanning timer for children for which
+       NOTIFY(CDS) is received, or reduce the periodic scanning
+       frequency accordingly (e.g. to every two weeks).  This will
+       decrease the scanning effort for the parent.  If a CDS/CDNSKEY
+       change is then detected (without having received a notification),
+       the parent SHOULD clear that state and revert to the default
+       scanning schedule.
 
        Parents introducing CDS/CDNSKEY scanning support at the same time
        as NOTIFY(CDS) support are not in danger of breaking children's
