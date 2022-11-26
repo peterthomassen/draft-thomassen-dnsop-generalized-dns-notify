@@ -156,19 +156,15 @@ Table of Contents
 
    The original problem that RFC 1996 addressed was the problem of
    optimization between frequent checking for new versions of a zone by
-   a secondary and infrequent checking.  Both are inefficient.  NOTIFY
-   transforms this into an efficient mechanism.
+   a secondary and infrequent checking.  While it is possible to
+   indicate how frequently checks should occur (via the SOA Refresh
+   parameter), these checks did not allow catching zone changes that
+   fall between checkpoints.  NOTIFY replaces scheduled scanning with a
+   more efficient mechanism.
 
    In modern DNS infrastructure there are several new scanning based
    inefficiencies that did not exist at the time of the writing of RFC
    1996.
-
-   Not every zone runs a CDS or CSYNC scanner (today).  However, for
-   those that do, the problem is actually worse than in the traditional
-   primary to secondary case.  The reason is that in the original case
-   the primary is able to indicate frequent changes are to be expected
-   (via the SOA Refresh parameter).  No equivalent mechanism exist for
-   the new scanning services.
 
 3.1.  CDS and CDNSKEY Scanners
 
@@ -180,6 +176,13 @@ Table of Contents
 
    Frequent scanning is costly.  Infrequent scanning causes slower
    convergence (i.e. delay until the DS in the parent is updated).
+
+   Not every zone runs a CDS or CSYNC scanner (today).  However, for
+   those that do, the problem is actually worse than in the traditional
+   primary to secondary case.  The reason is that in the original case
+   the primary is able to indicate how frequently changes are to be
+   expected (via the SOA Refresh parameter).  No equivalent mechanism
+   exist for the new scanning services.
 
 3.2.  CSYNC Scanners
 
@@ -264,41 +267,35 @@ Table of Contents
 4.2.  How to Interpret CDS and CSYNC Notifications
 
    Upon receipt of a NOTIFY(CDS) for a particular child zone at the
-   published address for CDS notifications, the parent, roughly
-   speaking, has three options:
+   published address for CDS notifications, the parent has two options:
 
    1.  Schedule an immediate check of the CDS and CDNSKEY RRsets as
        published by that particular child zone.
 
        The parent MAY keep state about children which are known to send
        NOTIFY(CDS) messages, and reduce the periodic scanning frequency
-       accordingly (e.g. to every two weeks).  If a CDS/CDNSKEY change
-       is then detected, the parent SHOULD clear that state and revert
-       to the default scanning schedule.  Parents introducing CDS/
-       CDNSKEY scanning support at the same time as NOTIFY(CDS) support
-       are not in danger of breaking children's scanning assumption, and
-       MAY therefore use a low-frequency scanning schedule in default
-       mode.
+       accordingly (e.g. to every two weeks).  This will decrease the
+       scanning effort for the parent.  If a CDS/CDNSKEY change is then
+       detected (without having received a notification), the parent
+       SHOULD clear that state and revert to the default scanning
+       schedule.
 
-   2.  Schedule an immediate check of the CDS and CDNSKEY RRsets as
-       published by that particular child zone.
+       Parents introducing CDS/CDNSKEY scanning support at the same time
+       as NOTIFY(CDS) support are not in danger of breaking children's
+       scanning assumption, and MAY therefore use a low-frequency
+       scanning schedule in default mode.
 
-       Choose to reduce the scheduled scanning frequency for that
-       particular child zone, at least not for some time, as that child
-       is apparently able to send CDS notifications when it is rolling
-       its KSK.  This will decrease the scanning effort for the parent.
-
-   3.  Ignore the notification, in which case the system works exactly
+   2.  Ignore the notification, in which case the system works exactly
        as before.
 
-   If the parent implements one of the first two options the convergence
-   time (time between publication of a new CDS and propagation of the
-   resulting DS) will decrease significantly, thereby providing improved
-   service to the child zone.
+   If the parent implements the first option, the convergence time (time
+   between publication of a new CDS and propagation of the resulting DS)
+   will decrease significantly, thereby providing improved service to
+   the child zone.
 
    If the parent, in addition to scheduling an immediate check for the
    child zone of the notification, also choses to modify the scanning
-   schedule (to be less frequent) the cost of providing the scanning
+   schedule (to be less frequent), the cost of providing the scanning
    service will be reduced.
 
    Upon receipt of a NOTIFY(CSYNC) to the published address for CSYNC
@@ -358,9 +355,10 @@ Table of Contents
    for signing.
 
    However, as multi-signer is strongly dependent on DNSKEY
-   notifications (which can only be generated by the signing software)
-   this does not alleviate the need for modifications also to signing
-   software to support NOTIFY(DNSKEY).
+   notifications (which, in case of an automatic ZSK rollover, can only
+   be generated by the signing software), this does not alleviate the
+   need for modifications also to signing software to support
+   NOTIFY(DNSKEY).
 
 7.  Timing Considerations
 
