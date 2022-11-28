@@ -8,7 +8,21 @@
 <meta content="Johan Stenstam" name="author">
 <meta content="Peter Thomassen" name="author">
 <meta content="
-       This document specifies generalized DNS notifications. 
+       Changes in CDS/CDNSKEY, CSYNC, and other records related to delegation
+maintenance are usually detected through scheduled scans run by the
+consuming party (e.g. top-level domain registry), incurring an
+uncomfortable trade-off between scanning cost and update latency. 
+       A similar problem exists when scheduling zone transfers, and has been
+solved using the well-known DNS NOTIFY mechanism ( ).
+This mechanism enables a primary nameserver to proactively inform
+secondaries about zone changes, allowing the secondary to initiate an
+ad-hoc transfer independently of when the next SOA check would be due. 
+       This document extends the use of DNS NOTIFY beyond conventional zone
+transfer hints, bringing the benefits of ad-hoc notifications to DNS
+delegation maintenance in general.
+Use cases include DNSSEC key rollovers hints via NOTIFY(CDS) and
+NOTIFY(DNSKEY), and quicker changes to a delegation's NS record set
+via NOTIFY(CSYNC). 
        TO BE REMOVED: This document is being collaborated on in Github at:
  https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-dns-notifications .
 The most recent working version of the document, open issues, etc. should all be
@@ -1044,7 +1058,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Stenstam &amp; Thomassen</td>
-<td class="center">Expires 28 May 2023</td>
+<td class="center">Expires 1 June 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1057,12 +1071,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-thomassen-dnsop-generalized-dns-notifications-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-11-24" class="published">24 November 2022</time>
+<time datetime="2022-11-28" class="published">28 November 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-05-28">28 May 2023</time></dd>
+<dd class="expires"><time datetime="2023-06-01">1 June 2023</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1079,11 +1093,25 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <h1 id="title">Generalized DNS Notifications</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document specifies generalized DNS notifications.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">TO BE REMOVED: This document is being collaborated on in Github at:
+<p id="section-abstract-1">Changes in CDS/CDNSKEY, CSYNC, and other records related to delegation
+maintenance are usually detected through scheduled scans run by the
+consuming party (e.g. top-level domain registry), incurring an
+uncomfortable trade-off between scanning cost and update latency.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">A similar problem exists when scheduling zone transfers, and has been
+solved using the well-known DNS NOTIFY mechanism (<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>).
+This mechanism enables a primary nameserver to proactively inform
+secondaries about zone changes, allowing the secondary to initiate an
+ad-hoc transfer independently of when the next SOA check would be due.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">This document extends the use of DNS NOTIFY beyond conventional zone
+transfer hints, bringing the benefits of ad-hoc notifications to DNS
+delegation maintenance in general.
+Use cases include DNSSEC key rollovers hints via NOTIFY(CDS) and
+NOTIFY(DNSKEY), and quicker changes to a delegation's NS record set
+via NOTIFY(CSYNC).<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+<p id="section-abstract-4">TO BE REMOVED: This document is being collaborated on in Github at:
 <a href="https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-dns-notifications">https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-dns-notifications</a>.
 The most recent working version of the document, open issues, etc. should all be
-available there.  The authors (gratefully) accept pull requests.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+available there.  The authors (gratefully) accept pull requests.<a href="#section-abstract-4" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1104,7 +1132,7 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 May 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 June 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1162,10 +1190,10 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-cds-cdnskey-and-csync-notif" class="internal xref">CDS/CDNSKEY and CSYNC Notifications</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-where-to-send-cds-cdnskey-a" class="internal xref">Where to send CDS/CDNSKEY and CSYNC Notifications</a></p>
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-where-to-send-cds-and-csync" class="internal xref">Where to send CDS and CSYNC Notifications</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-how-to-interpret-cds-cdnske" class="internal xref">How to Interpret CDS/CDNSKEY and CSYNC Notifications</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-how-to-interpret-cds-and-cs" class="internal xref">How to Interpret CDS and CSYNC Notifications</a></p>
 </li>
             </ul>
 </li>
@@ -1177,9 +1205,6 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
                 <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-how-to-interpret-dnskey-not" class="internal xref">How to Interpret DNSKEY Notifications</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
-                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-open-question-for-dnskey-no" class="internal xref">Open Question For DNSKEY Notifications</a></p>
 </li>
             </ul>
 </li>
@@ -1196,7 +1221,7 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
                 <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-srv-vs-new-record-type" class="internal xref">SRV vs new record type</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-do-multi-signer-setups-also" class="internal xref">Do multi-signer setups also need a NOTIFY(NS)?</a></p>
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-open-question-for-dnskey-no" class="internal xref">Open Question For DNSKEY Notifications</a></p>
 </li>
             </ul>
 </li>
@@ -1207,10 +1232,19 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-change-history-to-be-remove" class="internal xref">Change History (to be removed before publication)</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-change-history-to-be-remove" class="internal xref">Change History (to be removed before publication)</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1222,7 +1256,7 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">This document introduces a generalization of the DNS NOTIFY mechanism
-described in RFC 1996.<a href="#section-1-1" class="pilcrow">¶</a></p>
+described in <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Traditional DNS notifications, which are here referred to as
 "NOTIFY(SOA)", are sent from a primary server to a secondary server to
 minimize the latter's convergence time to a new version of the
@@ -1236,9 +1270,9 @@ inefficiencies.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">There are no DNS protocol changes introduced by this document.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">There are, however, proposals for how to interpret a wider range of
 DNS messages that are already allowed (but not used) by the protocol.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">Readers are expected to be familiar with DNSSEC, including [@!RFC4033],
-[@!RFC4034], [@!RFC4035], [@!RFC6781], [@!RFC7344], [@!RFC7477], [@!RFC7583],
-and [@!RFC8901].<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-6">Readers are expected to be familiar with DNSSEC, including <span>[<a href="#RFC4033" class="cite xref">RFC4033</a>]</span>,
+<span>[<a href="#RFC4034" class="cite xref">RFC4034</a>]</span>, <span>[<a href="#RFC4035" class="cite xref">RFC4035</a>]</span>, <span>[<a href="#RFC6781" class="cite xref">RFC6781</a>]</span>, <span>[<a href="#RFC7344" class="cite xref">RFC7344</a>]</span>, <span>[<a href="#RFC7477" class="cite xref">RFC7477</a>]</span>,
+<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span>, and <span>[<a href="#RFC8901" class="cite xref">RFC8901</a>]</span>.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <div id="requirements-notation">
 <section id="section-1.1">
         <h3 id="name-requirements-notation">
@@ -1247,8 +1281,8 @@ and [@!RFC8901].<a href="#section-1-6" class="pilcrow">¶</a></p>
 <p id="section-1.1-1">The key words "<strong>MUST</strong>", "<strong>MUST NOT</strong>", "<strong>REQUIRED</strong>", "<strong>SHALL</strong>", "<strong>SHALL
 NOT</strong>", "<strong>SHOULD</strong>", "<strong>SHOULD NOT</strong>", "<strong>RECOMMENDED</strong>", "<strong>NOT
 RECOMMENDED</strong>", "<strong>MAY</strong>", and "<strong>OPTIONAL</strong>" in this document are to be
-interpreted as described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when,
-they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only
+when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1258,13 +1292,13 @@ they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcr
       <h2 id="name-costs-and-dangers-of-slow-c">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-costs-and-dangers-of-slow-c" class="section-name selfRef">Costs and Dangers of Slow Convergence</a>
       </h2>
-<p id="section-2-1">RFC1996 introduced the concept of a DNS Notify message which was used
+<p id="section-2-1"><span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> introduced the concept of a DNS Notify message which was used
 to improve the convergence time for secondary servers when a DNS zone
 had been updated in the primary. The basic idea was to augment the
 traditional "pull" mechanism (a periodic SOA query) with a "push"
 mechanism (a Notify) for a common case that was otherwise very
 inefficient (due to either slow convergence or wasteful overly
-frequent scanning of the primary for changes.<a href="#section-2-1" class="pilcrow">¶</a></p>
+frequent scanning of the primary for changes).<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">Today we have similar issues with slow updates of DNS data in spite of
 the data having been published. The two most obvious cases are the
 scalability issues of modern CDS and CSYNC scanners that are beginning
@@ -1274,21 +1308,21 @@ is rather slow (as in infrequent).<a href="#section-2-2" class="pilcrow">¶</a><
 <p id="section-2-3">Another use case is for so-called "multi-signer" setups where there
 are multiple, semi-independent, "signers" that each sign the same
 zone, but with individual sets of keys. One requirement for
-multi-signer setups to work is the ability of inserting additional
+multi-signer setups to work is the ability to insert additional
 DNSKEY records in each signer's version of the zone. This is not the
 only multi-signer requirement, but it is the one that matters
-here. The problem here is that modern signers will automatically roll
-DNSSEC Zone Signing Keys without informing anyone, because ZSK
-rollovers are a local matter (as opposed to KSK rollovers that involve
-the parent).<a href="#section-2-3" class="pilcrow">¶</a></p>
+here. The problem here is that modern signers will commonly roll
+DNSSEC Zone Signing Keys automatically and without informing anyone,
+assuming a single-signer setup where ZSK rollovers are a local matter
+(as opposed to KSK rollovers that involve the parent).<a href="#section-2-3" class="pilcrow">¶</a></p>
 <p id="section-2-4">However, when the ZSKs of one signer are rolled the other signers will
 be unaware of this event. Having the individual signers sign DNSKEY
 RRsets where the ZSKs are not the same create a possibly broken
 signature chain and is therefore a dangerous situation. Eventually the
-signers will catch up, as multi-signer requires scanning of the DNSKEY
-RRsets of each signer to be able to compute the combined RRsets that
+signers will catch up, as multi-signer operators import each other's
+DNSKEY public key(s) to be able to compute the combined RRsets that
 should be published, but the period between the ZSK rollover in one
-signer and the other signers becoming aware constitute a period of
+signer and the other signers becoming aware constitutes a period of
 potential brokenness.<a href="#section-2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1297,13 +1331,16 @@ potential brokenness.<a href="#section-2-4" class="pilcrow">¶</a></p>
       <h2 id="name-efficiency-issues-with-dns-">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-efficiency-issues-with-dns-" class="section-name selfRef">Efficiency Issues with DNS Scanning vs. Notification</a>
       </h2>
-<p id="section-3-1">The original problem that RFC 1996 addressed was the problem of
+<p id="section-3-1">The original problem that <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> addressed was the problem of
 optimization between frequent checking for new versions of a zone by a
-secondary and infrequent checking. Both are inefficient. NOTIFY
-transforms this into an efficient mechanism.<a href="#section-3-1" class="pilcrow">¶</a></p>
+secondary and infrequent checking.
+While it is possible to indicate how frequently checks should occur
+(via the SOA Refresh parameter), these checks did not allow catching
+zone changes that fall between checkpoints.
+NOTIFY replaces scheduled scanning with a more efficient mechanism.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">In modern DNS infrastructure there are several new scanning based
-inefficiencies that did not exist at the time of the writing of RFC
-1996.<a href="#section-3-2" class="pilcrow">¶</a></p>
+inefficiencies that did not exist at the time of the writing of
+<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <div id="cds-and-cdnskey-scanners">
 <section id="section-3.1">
         <h3 id="name-cds-and-cdnskey-scanners">
@@ -1316,6 +1353,12 @@ only a very small number of the signed delegations that will have
 updated the CDS or CDNSKEY record between two scanning runs.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">Frequent scanning is costly. Infrequent scanning causes slower
 convergence (i.e. delay until the DS in the parent is updated).<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">Not every zone runs a CDS or CSYNC scanner (today). However, for those
+that do, the problem is actually worse than in the traditional primary
+to secondary case. The reason is that in the original case the primary
+is able to indicate how frequently changes are to be expected (via the
+SOA Refresh parameter). No equivalent mechanism exist for the new
+scanning services.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="csync-scanners">
@@ -1335,25 +1378,25 @@ in the child zones.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
         <h3 id="name-multi-signer-setups">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-multi-signer-setups" class="section-name selfRef">Multi-Signer Setups</a>
         </h3>
-<p id="section-3.3-1">Draft-foo-bar-multi-signer describes processes for managing signed
+<p id="section-3.3-1"><span>[<a href="#I-D.wisser-dnssec-automation" class="cite xref">I-D.wisser-dnssec-automation</a>]</span> describes processes for managing signed
 zones using multiple semi-independent "signers" (i.e. services that
 take an unsigned zone, sign it using unique DNSKEYs and publish the
-zone on the public Internet. The most common current setup for
+zone on the public Internet). The setup most commonly discussed for
 multi-signer uses a "multi-signer controller", which is a separate
 service responsible for keeping the signing and delegation information
 in sync across multiple signers.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">To keep information in sync the controller must scan the signers for
+<p id="section-3.3-2">To keep information in sync, the signers need to be scanned for
 current information about the DNSKEY RRset in each signer. The problem
 is that modern "signers" will typically do DNSKEY rollovers
 (especially ZSK rollovers) automatically without informing anyone
-else, because the ZSK rollover is a completely internal matter to the
-signer of the zone.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">Except that in the multi-signer case it isn't. And therefore the
-multi-signer controller must poll frequently to minimize the potential
-outage window between one signer changing its version of the DNSKEY
+else, because a single-signer setup is often assume (in which case the
+ZSK rollover is a matter completely internal to the signer).<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">In the multi-signer case, this is not a correct assumption. It is
+therefore necessary to run frequent polls frequently to minimize
+the time window between one signer changing its version of the DNSKEY
 RRset and the controller noticing and re-synchronizing all signers.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
 <p id="section-3.3-4">Frequent scanning: costly. Infrequent scanning: slower convergence
-(i.e. longer potential outage).<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+(i.e. longer potential inconsistency across signers).<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1363,28 +1406,32 @@ RRset and the controller noticing and re-synchronizing all signers.<a href="#sec
       <h2 id="name-cds-cdnskey-and-csync-notif">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-cds-cdnskey-and-csync-notif" class="section-name selfRef">CDS/CDNSKEY and CSYNC Notifications</a>
       </h2>
-<p id="section-4-1">By generalizing the concept of DNS Notify it is possible to address
+<p id="section-4-1">The <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> NOTIFY message sends a SOA record in the Query
+Section. We refer to this as a NOTIFY(SOA).
+By generalizing the concept of DNS NOTIFY it is possible to address
 not only the original inefficiency (primary name server to secondary
 nameserver convergence) but also the problems with CDS/CDNSKEY, CSYNC
 and Multi-Signer scanning for zone updates.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">The RFC 1996 NOTIFY message sends a SOA record in the Query
-Section. We refer to this as a NOTIFY(SOA). The CDS/CDNSKEY
-inefficiency may be addressed by the child sending a NOTIFY(CDS) to an
-address where the parent listens for such notifications. The CSYNC
-inefficiency may similarly be addressed by the child sinding a
+<p id="section-4-2">The CDS/CDNSKEY inefficiency may be addressed by the child sending a
+NOTIFY(CDS) to an address where the parent listens for such notifications.
+To address the CDS/CDNSKEY dichotomy, NOTIFY(CDS) is defined to indicate
+any child-side changes pertaining to a upcoming update of DS records.
+Upon receipt of NOTIFY(CDS), the parent SHOULD initiate the same scan
+that would other be triggered based on a timer.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">The CSYNC inefficiency may similarly be addressed by the child sinding a
 NOTIFY(CSYNC) to an address where the parent is listening to CSYNC
-notifications.<a href="#section-4-2" class="pilcrow">¶</a></p>
-<p id="section-4-3">In both cases the notification will speed up the CDS and CSYNC
+notifications.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">In both cases the notification will speed up the CDS and CSYNC
 scanning by providing the parent with a hint that a particular child
-zone has published new CDS, CDNSKEY and/or CSYNC records.<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">The DNS protocol already allows these new notification types, so no
+zone has published new CDS, CDNSKEY and/or CSYNC records.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">The DNS protocol already allows these new notification types, so no
 protocol change is required, the only thing needed is specification of
 where to send the new types of Notifies and how to interpret them in
-the receiving end.<a href="#section-4-4" class="pilcrow">¶</a></p>
-<div id="where-to-send-cdscdnskey-and-csync-notifications">
+the receiving end.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<div id="where-to-send-cds-and-csync-notifications">
 <section id="section-4.1">
-        <h3 id="name-where-to-send-cds-cdnskey-a">
-<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-where-to-send-cds-cdnskey-a" class="section-name selfRef">Where to send CDS/CDNSKEY and CSYNC Notifications</a>
+        <h3 id="name-where-to-send-cds-and-csync">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-where-to-send-cds-and-csync" class="section-name selfRef">Where to send CDS and CSYNC Notifications</a>
         </h3>
 <p id="section-4.1-1">In the case of NOTIFY(CDS) and NOTIFY(CSYNC) the ultimate recipient of
 the notification is the parent, to improve the speed and efficiency of
@@ -1394,34 +1441,55 @@ its own zone the simplest solution is for the parent to publish the
 address where it prefers to have notifications sent. To be slightly
 more general than just using an address record we propose to use SRV
 records, as they are well suited to this.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">In the zone "parent.":<a href="#section-4.1-2" class="pilcrow">¶</a></p>
-<p id="section-4.1-3"><code>
+<p id="section-4.1-2">In the zone <code>parent.</code>:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.1-3">
+<pre>
 _cds-notifications.parent.   IN SRV n m  53 scanner.parent.
 _csync-notifications.parent. IN SRV n m  53 scanner.parent.
-</code><a href="#section-4.1-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-4.1-3" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
-<div id="how-to-interpret-cdscdnskey-and-csync-notifications">
+<div id="how-to-interpret-cds-and-csync-notifications">
 <section id="section-4.2">
-        <h3 id="name-how-to-interpret-cds-cdnske">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-how-to-interpret-cds-cdnske" class="section-name selfRef">How to Interpret CDS/CDNSKEY and CSYNC Notifications</a>
+        <h3 id="name-how-to-interpret-cds-and-cs">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-how-to-interpret-cds-and-cs" class="section-name selfRef">How to Interpret CDS and CSYNC Notifications</a>
         </h3>
-<p id="section-4.2-1">On receipt of a NOTIFY(CDS) for a particular child zone at the
-published address for CDS notifications the parent has the option of
-scheduling an immediate check of the CDS and CDNSKEY RRsets as
-published by that particular child zone. If the parent does this the
-convergence time (time for publication of a new CDS until propagation
-of the corresponding DS) will decrease significantly, thereby
-providing improved service to the child zone.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">At its option the parent may also choose not to scan that particular
-child, at least not for some time, as that child is apparently able to
-send CDS notifications when it is rolling its KSK. This will decrease
-the scanning effort for the parent.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
-<p id="section-4.2-3">A third option is to ignore the notification, in which case the system
-works exactly as before.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.2-4">On receipt of a NOTIFY(CSYNC) to the published address for CSYNC
-notifications the parent has exactly the same options to choose among
-as for the NOTIFY(CDS).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">Upon receipt of a NOTIFY(CDS) for a particular child zone at the
+published address for CDS notifications, the parent has two options:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.2-2">
+<li id="section-4.2-2.1">
+            <p id="section-4.2-2.1.1">Schedule an immediate check of the CDS and CDNSKEY RRsets as
+published by that particular child zone.<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2.1.2">
+The parent MAY reset the scanning timer for children for which
+NOTIFY(CDS) is received, or reduce the periodic scanning frequency
+accordingly (e.g. to every two weeks).
+This will decrease the scanning effort for the parent.
+If a CDS/CDNSKEY change is then detected (without having received
+a notification), the parent SHOULD clear that state and revert to
+the default scanning schedule.<a href="#section-4.2-2.1.2" class="pilcrow">¶</a></p>
+<p id="section-4.2-2.1.3">
+Parents introducing CDS/CDNSKEY scanning support at the same time
+as NOTIFY(CDS) support are not in danger of breaking children's
+scanning assumption, and MAY therefore use a low-frequency
+scanning schedule in default mode.<a href="#section-4.2-2.1.3" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.2-2.2">Ignore the notification, in which case the system works exactly
+as before.<a href="#section-4.2-2.2" class="pilcrow">¶</a>
+</li>
+        </ol>
+<p id="section-4.2-3">If the parent implements the first option, the convergence time (time
+between publication of a new CDS and propagation of the resulting DS)
+will decrease significantly, thereby providing improved service to the
+child zone.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2-4">If the parent, in addition to scheduling an immediate check for the
+child zone of the notification, also choses to modify the scanning
+schedule (to be less frequent), the cost of providing the scanning
+service will be reduced.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-5">Upon receipt of a NOTIFY(CSYNC) to the published address for CSYNC
+notifications, the parent has exactly the same options to choose among
+as for the NOTIFY(CDS).<a href="#section-4.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1449,11 +1517,13 @@ multi-signer setups to work is that at least one external party (the
 multi-signer controller) has the ability to insert or modify RRsets in
 the child zone. Therefore the controller should be able to insert a
 record that documents the wanted address for DNSKEY notifications.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">In analogy with the other cases, but here in the zone "child.parent.":<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3"><code>
+<p id="section-5.1-2">In analogy with the other cases, but here in the zone <code>child.parent.</code>:<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-3">
+<pre>
 _dnskey-notification.child.parent. IN SRV n m 53 scanner.signerA.
 _dnskey-notification.child.parent. IN SRV n m 53 scanner.signerB.
-</code><a href="#section-5.1-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-5.1-3" class="pilcrow">¶</a>
+</div>
 <p id="section-5.1-4">should act as a trigger for the signer that whenever there are changes
 to the DNSKEY RRset it should send a corresponding NOTIFY(DNSKEY) to
 all signers that have signaled interest via insertion of SRV records
@@ -1474,19 +1544,6 @@ NOTIFY(CDS) and NOTIFY(CSYNC) cases: schedule an immediate check,
 delay regular checks and ignore.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="open-question-for-dnskey-notifications">
-<section id="section-5.3">
-        <h3 id="name-open-question-for-dnskey-no">
-<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-open-question-for-dnskey-no" class="section-name selfRef">Open Question For DNSKEY Notifications</a>
-        </h3>
-<p id="section-5.3-1">In a multi-signer setup there are multiple signers. How will the
-multi-signer controller know which signer sent the notification? As
-the number of signers for a particular zone is low (typically 2 or
-possibly 3), there is no major problem caused by not knowing which
-signer sent the notification and instead always check all the signers
-for updates to the DNSKEY RRset.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-</section>
-</div>
 </section>
 </div>
 <div id="who-should-send-the-notifications">
@@ -1503,7 +1560,9 @@ thereby enabling this new functionality even before the emergence of
 support for generalized DNS notifications in the name servers used for
 signing.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">However, as multi-signer is strongly dependent on DNSKEY notifications
-(which can only be generated by the signing software) all is not good.<a href="#section-6-3" class="pilcrow">¶</a></p>
+(which, in case of an automatic ZSK rollover, can only be generated by
+the signing software), this does not alleviate the need for
+modifications also to signing software to support NOTIFY(DNSKEY).<a href="#section-6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="timing-considerations">
@@ -1524,6 +1583,8 @@ for the new data would alleviate this issue. However, as the parent
 has no way of knowing how quickly the child zone propagates, any such
 intentional delay should be implemented in the sending end, i.e. at
 the server generating the NOTIFY(CDS), not in the receiving end.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">NOTIFY(CSYNC) has the same timing consideration as NOTIFY(CDS) while
+NOTIFY(DNSKEY) does not.<a href="#section-7-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="open-questions">
@@ -1547,30 +1608,26 @@ the new type rather than the standard SRV RRtype that occurs in
 completely other scenarios than are described here. If that is the
 case it could be that a new record type would provide a cleaner
 solution to all the new types of notification signaling. Eg.:<a href="#section-8.1-2" class="pilcrow">¶</a></p>
-<p id="section-8.1-3"><code>
+<div class="alignLeft art-text artwork" id="section-8.1-3">
+<pre>
 parent.         IN NOTIFY  CDS     53   scanner.parent.
 parent.         IN NOTIFY  CSYNC   53   scanner.parent.
 child.parent.   IN NOTIFY  DNSKEY  5300 music.service.provider.
-</code><a href="#section-8.1-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-8.1-3" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
-<div id="do-multi-signer-setups-also-need-a-notifyns">
+<div id="open-question-for-dnskey-notifications">
 <section id="section-8.2">
-        <h3 id="name-do-multi-signer-setups-also">
-<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-do-multi-signer-setups-also" class="section-name selfRef">Do multi-signer setups also need a NOTIFY(NS)?</a>
+        <h3 id="name-open-question-for-dnskey-no">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-open-question-for-dnskey-no" class="section-name selfRef">Open Question For DNSKEY Notifications</a>
         </h3>
-<p id="section-8.2-1">This can be argued both ways.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">Against: The NS RRset (and possibly any in-bailiwick nameserver
-addresses) is part of the unsigned zone and must therefore be kept in
-sync regardless of any notifications.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
-<p id="section-8.2-3">For: The typical multi-signer use case is where the unsigned zone is
-sent to more than one DNS service provider that both signs the zone
-and serves the resulting zone. For the DNS service provider to be able
-to serve the zone it is preferable to have the ability to control the
-names and addresses of the nameservers providing the service.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
-<p id="section-8.2-4">If the conclusion is that NOTIFY(NS) is important for multi-signer
-then it is not difficult to add using the same design as for
-NOTIFY(DNSKEY).<a href="#section-8.2-4" class="pilcrow">¶</a></p>
+<p id="section-8.2-1">In a multi-signer setup there are multiple signers. How will the
+multi-signer controller know which signer sent the notification? As
+the number of signers for a particular zone is low (typically 2 or
+possibly 3), there is no major problem caused by not knowing which
+signer sent the notification and instead always check all the signers
+for updates to the DNSKEY RRset.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1583,7 +1640,7 @@ NOTIFY(DNSKEY).<a href="#section-8.2-4" class="pilcrow">¶</a></p>
 <p id="section-9-1">In the multi-signer case, where the same zone is signed by multiple
 semi-independent "signers" it is obviously necessary to devise means
 of keeping the non-DNSSEC contents of the zone in sync. That is out of
-scope of the multi-signer work and also out-of-scope of this document.<a href="#section-9-1" class="pilcrow">¶</a></p>
+scope of the multi-signer work and also out of scope of this document.<a href="#section-9-1" class="pilcrow">¶</a></p>
 <p id="section-9-2">A corner case of this scoping regards making changes to the NS
 RRset. Individual signers (as in DNS service providers) may want to be
 able to make such changes independently of the other contents of the
@@ -1595,7 +1652,7 @@ zone. See previous section.<a href="#section-9-2" class="pilcrow">¶</a></p>
       <h2 id="name-security-considerations">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-10-1">The original NOTIFY specification (RFC 1996) sidesteps most security
+<p id="section-10-1">The original NOTIFY specification (<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>) sidesteps most security
 issues by not relying on the information in the NOTIFY message in any
 way but instead only use it to set the timer until the next scheduled
 check (for the SOA record) to zero. Therefore it is impossible to
@@ -1603,7 +1660,7 @@ affect the behaviour of the recipient of the NOTIFY other than by
 changing the timing for when different checks are initiated.<a href="#section-10-1" class="pilcrow">¶</a></p>
 <p id="section-10-2">This mechanism and security model is reused for all the generalized
 NOTIFY messages.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">Another consideration that is necessary is whether generalized DNS
+<p id="section-10-3">Another consideration is whether generalized DNS
 Notifications can be used as an amplification attack. The answer seems
 to be "NO", because the size of the generalized NOTIFY messages is
 mostly equal to the size of the response and it is also mostly equal
@@ -1612,27 +1669,137 @@ CSYNC or DNSKEY RRset).<a href="#section-10-3" class="pilcrow">¶</a></p>
 <p id="section-10-4">Hence the amplification attack potential of generalized Notifications
 is the same as for the original NOTIFY(SOA), which has never been
 found to be useful for amplification attacks.<a href="#section-10-4" class="pilcrow">¶</a></p>
-<p id="section-10-5">{backmatter}<a href="#section-10-5" class="pilcrow">¶</a></p>
+<p id="section-10-5">In any case, NOTIFY consumers MAY configure rate limits to address
+concerns about the impact of unsolicited NOTIFY messages.<a href="#section-10-5" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="change-history-to-be-removed-before-publication">
+<div id="iana-considerations">
 <section id="section-11">
+      <h2 id="name-iana-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-11-1">Per <span>[<a href="#RFC8552" class="cite xref">RFC8552</a>]</span>, IANA is requested to create the "Generalized DNS
+Notifications" registry with the following columns and initial
+entries:<a href="#section-11-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+        <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">NOTIFY type</th>
+            <th class="text-left" rowspan="1" colspan="1">Location</th>
+            <th class="text-left" rowspan="1" colspan="1">relative to</th>
+            <th class="text-left" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">CDS</td>
+            <td class="text-left" rowspan="1" colspan="1">_cds-notifications</td>
+            <td class="text-left" rowspan="1" colspan="1">parent</td>
+            <td class="text-left" rowspan="1" colspan="1">[this document]</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">CSYNC</td>
+            <td class="text-left" rowspan="1" colspan="1">_csync-notifications</td>
+            <td class="text-left" rowspan="1" colspan="1">parent</td>
+            <td class="text-left" rowspan="1" colspan="1">[this document]</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">DNSKEY</td>
+            <td class="text-left" rowspan="1" colspan="1">TODO</td>
+            <td class="text-left" rowspan="1" colspan="1">TODO</td>
+            <td class="text-left" rowspan="1" colspan="1">[this document]</td>
+          </tr>
+        </tbody>
+      </table>
+<p id="section-11-3">[TODO: (1) Detail out use cases? (2) Add entries via RFC or web form?]<a href="#section-11-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="section-12">
+      <h2 id="name-acknowledgements">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="section-12-1">Christian Elmerot<a href="#section-12-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-13">
+      <h2 id="name-normative-references">
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+      </h2>
+<dl class="references">
+<dt id="I-D.wisser-dnssec-automation">[I-D.wisser-dnssec-automation]</dt>
+      <dd>
+<span class="refAuthor">Wisser, U.</span> and <span class="refAuthor">S. Huque</span>, <span class="refTitle">"DNSSEC automation"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-wisser-dnssec-automation-03</span>, <time datetime="2022-03-06" class="refDate">6 March 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-wisser-dnssec-automation-03">https://datatracker.ietf.org/doc/html/draft-wisser-dnssec-automation-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC1996">[RFC1996]</dt>
+      <dd>
+<span class="refAuthor">Vixie, P.</span>, <span class="refTitle">"A Mechanism for Prompt Notification of Zone Changes (DNS NOTIFY)"</span>, <span class="seriesInfo">RFC 1996</span>, <span class="seriesInfo">DOI 10.17487/RFC1996</span>, <time datetime="1996-08" class="refDate">August 1996</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc1996">https://www.rfc-editor.org/rfc/rfc1996</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+      <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4033">[RFC4033]</dt>
+      <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"DNS Security Introduction and Requirements"</span>, <span class="seriesInfo">RFC 4033</span>, <span class="seriesInfo">DOI 10.17487/RFC4033</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4033">https://www.rfc-editor.org/rfc/rfc4033</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4034">[RFC4034]</dt>
+      <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"Resource Records for the DNS Security Extensions"</span>, <span class="seriesInfo">RFC 4034</span>, <span class="seriesInfo">DOI 10.17487/RFC4034</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4034">https://www.rfc-editor.org/rfc/rfc4034</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4035">[RFC4035]</dt>
+      <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"Protocol Modifications for the DNS Security Extensions"</span>, <span class="seriesInfo">RFC 4035</span>, <span class="seriesInfo">DOI 10.17487/RFC4035</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4035">https://www.rfc-editor.org/rfc/rfc4035</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6781">[RFC6781]</dt>
+      <dd>
+<span class="refAuthor">Kolkman, O.</span>, <span class="refAuthor">Mekking, W.</span>, and <span class="refAuthor">R. Gieben</span>, <span class="refTitle">"DNSSEC Operational Practices, Version 2"</span>, <span class="seriesInfo">RFC 6781</span>, <span class="seriesInfo">DOI 10.17487/RFC6781</span>, <time datetime="2012-12" class="refDate">December 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6781">https://www.rfc-editor.org/rfc/rfc6781</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7344">[RFC7344]</dt>
+      <dd>
+<span class="refAuthor">Kumari, W.</span>, <span class="refAuthor">Gudmundsson, O.</span>, and <span class="refAuthor">G. Barwood</span>, <span class="refTitle">"Automating DNSSEC Delegation Trust Maintenance"</span>, <span class="seriesInfo">RFC 7344</span>, <span class="seriesInfo">DOI 10.17487/RFC7344</span>, <time datetime="2014-09" class="refDate">September 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7344">https://www.rfc-editor.org/rfc/rfc7344</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7477">[RFC7477]</dt>
+      <dd>
+<span class="refAuthor">Hardaker, W.</span>, <span class="refTitle">"Child-to-Parent Synchronization in DNS"</span>, <span class="seriesInfo">RFC 7477</span>, <span class="seriesInfo">DOI 10.17487/RFC7477</span>, <time datetime="2015-03" class="refDate">March 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7477">https://www.rfc-editor.org/rfc/rfc7477</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7583">[RFC7583]</dt>
+      <dd>
+<span class="refAuthor">Morris, S.</span>, <span class="refAuthor">Ihren, J.</span>, <span class="refAuthor">Dickinson, J.</span>, and <span class="refAuthor">W. Mekking</span>, <span class="refTitle">"DNSSEC Key Rollover Timing Considerations"</span>, <span class="seriesInfo">RFC 7583</span>, <span class="seriesInfo">DOI 10.17487/RFC7583</span>, <time datetime="2015-10" class="refDate">October 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7583">https://www.rfc-editor.org/rfc/rfc7583</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8552">[RFC8552]</dt>
+      <dd>
+<span class="refAuthor">Crocker, D.</span>, <span class="refTitle">"Scoped Interpretation of DNS Resource Records through "Underscored" Naming of Attribute Leaves"</span>, <span class="seriesInfo">BCP 222</span>, <span class="seriesInfo">RFC 8552</span>, <span class="seriesInfo">DOI 10.17487/RFC8552</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8552">https://www.rfc-editor.org/rfc/rfc8552</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8901">[RFC8901]</dt>
+    <dd>
+<span class="refAuthor">Huque, S.</span>, <span class="refAuthor">Aras, P.</span>, <span class="refAuthor">Dickinson, J.</span>, <span class="refAuthor">Vcelak, J.</span>, and <span class="refAuthor">D. Blacka</span>, <span class="refTitle">"Multi-Signer DNSSEC Models"</span>, <span class="seriesInfo">RFC 8901</span>, <span class="seriesInfo">DOI 10.17487/RFC8901</span>, <time datetime="2020-09" class="refDate">September 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8901">https://www.rfc-editor.org/rfc/rfc8901</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<div id="change-history-to-be-removed-before-publication">
+<section id="appendix-A">
       <h2 id="name-change-history-to-be-remove">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-change-history-to-be-remove" class="section-name selfRef">Change History (to be removed before publication)</a>
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-change-history-to-be-remove" class="section-name selfRef">Change History (to be removed before publication)</a>
       </h2>
 <ul class="normal">
-<li class="normal" id="section-11-1.1">draft-thomassen-dnsop-generalized-dns-notifications-00<a href="#section-11-1.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-A-1.1">draft-thomassen-dnsop-generalized-dns-notifications-00<a href="#appendix-A-1.1" class="pilcrow">¶</a>
 </li>
       </ul>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-11-2.1">
-          <p id="section-11-2.1.1">Initial public draft.<a href="#section-11-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="appendix-A-2.1">
+          <p id="appendix-A-2.1.1">Initial public draft.<a href="#appendix-A-2.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-A">
+<section id="appendix-B">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
