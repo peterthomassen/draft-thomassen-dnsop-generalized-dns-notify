@@ -93,7 +93,8 @@ Table of Contents
      8.2.  Open Question For DNSKEY Notifications
    9.  Out of Scope
    10. Security Considerations
-   11. Normative References
+   11. IANA Considerations
+   12. Normative References
    Appendix A.  Change History (to be removed before publication)
    Authors' Addresses
 
@@ -467,7 +468,31 @@ Table of Contents
    In any case, NOTIFY consumers MAY configure rate limits to address
    concerns about the impact of unsolicited NOTIFY messages.
 
-11.  Normative References
+11.  IANA Considerations
+
+   Per [RFC8552], IANA is requested to create the "Generalized DNS
+   Notifications" registry with the following columns and initial
+   entries:
+
+     +=============+======================+=============+===========+
+     | NOTIFY type | Location             | relative to | Reference |
+     +=============+======================+=============+===========+
+     | CDS         | _cds-notifications   | parent      | [this     |
+     |             |                      |             | document] |
+     +-------------+----------------------+-------------+-----------+
+     | CSYNC       | _csync-notifications | parent      | [this     |
+     |             |                      |             | document] |
+     +-------------+----------------------+-------------+-----------+
+     | DNSKEY      | TODO                 | TODO        | [this     |
+     |             |                      |             | document] |
+     +-------------+----------------------+-------------+-----------+
+
+                                 Table 1
+
+   [TODO: (1) Detail out use cases? (2) Add entries via RFC or web
+   form?]
+
+12.  Normative References
 
    [I-D.wisser-dnssec-automation]
               Wisser, U. and S. Huque, "DNSSEC automation", Work in
@@ -521,6 +546,11 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8552]  Crocker, D., "Scoped Interpretation of DNS Resource
+              Records through "Underscored" Naming of Attribute Leaves",
+              BCP 222, RFC 8552, DOI 10.17487/RFC8552, March 2019,
+              <https://www.rfc-editor.org/rfc/rfc8552>.
 
    [RFC8901]  Huque, S., Aras, P., Dickinson, J., Vcelak, J., and D.
               Blacka, "Multi-Signer DNSSEC Models", RFC 8901,

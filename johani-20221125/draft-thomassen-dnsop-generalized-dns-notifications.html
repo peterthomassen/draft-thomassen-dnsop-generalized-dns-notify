@@ -1232,13 +1232,16 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-change-history-to-be-remove" class="internal xref">Change History (to be removed before publication)</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-change-history-to-be-remove" class="internal xref">Change History (to be removed before publication)</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1667,9 +1670,51 @@ found to be useful for amplification attacks.<a href="#section-10-4" class="pilc
 concerns about the impact of unsolicited NOTIFY messages.<a href="#section-10-5" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="iana-considerations">
 <section id="section-11">
+      <h2 id="name-iana-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-11-1">Per <span>[<a href="#RFC8552" class="cite xref">RFC8552</a>]</span>, IANA is requested to create the "Generalized DNS
+Notifications" registry with the following columns and initial
+entries:<a href="#section-11-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+        <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">NOTIFY type</th>
+            <th class="text-left" rowspan="1" colspan="1">Location</th>
+            <th class="text-left" rowspan="1" colspan="1">relative to</th>
+            <th class="text-left" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">CDS</td>
+            <td class="text-left" rowspan="1" colspan="1">_cds-notifications</td>
+            <td class="text-left" rowspan="1" colspan="1">parent</td>
+            <td class="text-left" rowspan="1" colspan="1">[this document]</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">CSYNC</td>
+            <td class="text-left" rowspan="1" colspan="1">_csync-notifications</td>
+            <td class="text-left" rowspan="1" colspan="1">parent</td>
+            <td class="text-left" rowspan="1" colspan="1">[this document]</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">DNSKEY</td>
+            <td class="text-left" rowspan="1" colspan="1">TODO</td>
+            <td class="text-left" rowspan="1" colspan="1">TODO</td>
+            <td class="text-left" rowspan="1" colspan="1">[this document]</td>
+          </tr>
+        </tbody>
+      </table>
+<p id="section-11-3">[TODO: (1) Detail out use cases? (2) Add entries via RFC or web form?]<a href="#section-11-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-12">
       <h2 id="name-normative-references">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
 <dt id="I-D.wisser-dnssec-automation">[I-D.wisser-dnssec-automation]</dt>
@@ -1715,6 +1760,10 @@ concerns about the impact of unsolicited NOTIFY messages.<a href="#section-10-5"
 <dt id="RFC8174">[RFC8174]</dt>
       <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8552">[RFC8552]</dt>
+      <dd>
+<span class="refAuthor">Crocker, D.</span>, <span class="refTitle">"Scoped Interpretation of DNS Resource Records through "Underscored" Naming of Attribute Leaves"</span>, <span class="seriesInfo">BCP 222</span>, <span class="seriesInfo">RFC 8552</span>, <span class="seriesInfo">DOI 10.17487/RFC8552</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8552">https://www.rfc-editor.org/rfc/rfc8552</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8901">[RFC8901]</dt>
     <dd>
