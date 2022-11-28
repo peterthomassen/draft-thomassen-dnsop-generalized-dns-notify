@@ -10,7 +10,7 @@ Expires: 1 June 2023                   deSEC, Secure Systems Engineering
 
 
                      Generalized DNS Notifications
-       draft-thomassen-dnsop-generalized-dns-notifications-latest
+          draft-thomassen-dnsop-generalized-dns-notify-latest
 
 Abstract
 
@@ -35,10 +35,10 @@ Abstract
 
    TO BE REMOVED: This document is being collaborated on in Github at:
    https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-
-   dns-notifications (https://github.com/peterthomassen/draft-thomassen-
-   dnsop-generalized-dns-notifications).  The most recent working
-   version of the document, open issues, etc. should all be available
-   there.  The authors (gratefully) accept pull requests.
+   dns-notify (https://github.com/peterthomassen/draft-thomassen-dnsop-
+   generalized-dns-notify).  The most recent working version of the
+   document, open issues, etc. should all be available there.  The
+   authors (gratefully) accept pull requests.
 
 Status of This Memo
 
@@ -564,7 +564,7 @@ Table of Contents
 
 Appendix A.  Change History (to be removed before publication)
 
-   *  draft-thomassen-dnsop-generalized-dns-notifications-00
+   *  draft-thomassen-dnsop-generalized-dns-notify-00
 
       Initial public draft.
 
