@@ -5,8 +5,8 @@
 DNSOP Working Group                                          J. Stenstam
 Internet-Draft                           The Swedish Internet Foundation
 Intended status: Standards Track                            P. Thomassen
-Expires: 30 May 2023                   deSEC, Secure Systems Engineering
-                                                        26 November 2022
+Expires: 1 June 2023                   deSEC, Secure Systems Engineering
+                                                        28 November 2022
 
 
                      Generalized DNS Notifications
@@ -14,7 +14,24 @@ Expires: 30 May 2023                   deSEC, Secure Systems Engineering
 
 Abstract
 
-   This document specifies generalized DNS notifications.
+   Changes in CDS/CDNSKEY, CSYNC, and other records related to
+   delegation maintenance are usually detected through scheduled scans
+   run by the consuming party (e.g. top-level domain registry),
+   incurring an uncomfortable trade-off between scanning cost and update
+   latency.
+
+   A similar problem exists when scheduling zone transfers, and has been
+   solved using the well-known DNS NOTIFY mechanism ([RFC1996]).  This
+   mechanism enables a primary nameserver to proactively inform
+   secondaries about zone changes, allowing the secondary to initiate an
+   ad-hoc transfer independently of when the next SOA check would be
+   due.
+
+   This document extends the use of DNS NOTIFY beyond conventional zone
+   transfer hints, bringing the benefits of ad-hoc notifications to DNS
+   delegation maintenance in general.  Use cases include DNSSEC key
+   rollovers hints via NOTIFY(CDS) and NOTIFY(DNSKEY), and quicker
+   changes to a delegation's NS record set via NOTIFY(CSYNC).
 
    TO BE REMOVED: This document is being collaborated on in Github at:
    https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-
@@ -38,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 May 2023.
+   This Internet-Draft will expire on 1 June 2023.
 
 Copyright Notice
 
@@ -83,7 +100,7 @@ Table of Contents
 1.  Introduction
 
    This document introduces a generalization of the DNS NOTIFY mechanism
-   described in RFC 1996.
+   described in [RFC1996].
 
    Traditional DNS notifications, which are here referred to as
    "NOTIFY(SOA)", are sent from a primary server to a secondary server
@@ -116,7 +133,7 @@ Table of Contents
 
 2.  Costs and Dangers of Slow Convergence
 
-   RFC 1996 introduced the concept of a DNS Notify message which was
+   [RFC1996] introduced the concept of a DNS Notify message which was
    used to improve the convergence time for secondary servers when a DNS
    zone had been updated in the primary.  The basic idea was to augment
    the traditional "pull" mechanism (a periodic SOA query) with a "push"
@@ -154,7 +171,7 @@ Table of Contents
 
 3.  Efficiency Issues with DNS Scanning vs. Notification
 
-   The original problem that RFC 1996 addressed was the problem of
+   The original problem that [RFC1996] addressed was the problem of
    optimization between frequent checking for new versions of a zone by
    a secondary and infrequent checking.  While it is possible to
    indicate how frequently checks should occur (via the SOA Refresh
@@ -163,8 +180,8 @@ Table of Contents
    more efficient mechanism.
 
    In modern DNS infrastructure there are several new scanning based
-   inefficiencies that did not exist at the time of the writing of RFC
-   1996.
+   inefficiencies that did not exist at the time of the writing of
+   [RFC1996].
 
 3.1.  CDS and CDNSKEY Scanners
 
@@ -220,7 +237,7 @@ Table of Contents
 
 4.  CDS/CDNSKEY and CSYNC Notifications
 
-   The RFC 1996 NOTIFY message sends a SOA record in the Query Section.
+   The [RFC1996] NOTIFY message sends a SOA record in the Query Section.
    We refer to this as a NOTIFY(SOA).  By generalizing the concept of
    DNS NOTIFY it is possible to address not only the original
    inefficiency (primary name server to secondary nameserver
@@ -426,7 +443,7 @@ Table of Contents
 
 10.  Security Considerations
 
-   The original NOTIFY specification (RFC 1996) sidesteps most security
+   The original NOTIFY specification ([RFC1996]) sidesteps most security
    issues by not relying on the information in the NOTIFY message in any
    way but instead only use it to set the timer until the next scheduled
    check (for the SOA record) to zero.  Therefore it is impossible to
@@ -457,6 +474,10 @@ Table of Contents
               Progress, Internet-Draft, draft-wisser-dnssec-automation-
               03, 6 March 2022, <https://datatracker.ietf.org/doc/html/
               draft-wisser-dnssec-automation-03>.
+
+   [RFC1996]  Vixie, P., "A Mechanism for Prompt Notification of Zone
+              Changes (DNS NOTIFY)", RFC 1996, DOI 10.17487/RFC1996,
+              August 1996, <https://www.rfc-editor.org/rfc/rfc1996>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,

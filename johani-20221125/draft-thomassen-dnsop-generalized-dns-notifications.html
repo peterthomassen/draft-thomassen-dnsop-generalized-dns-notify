@@ -8,7 +8,21 @@
 <meta content="Johan Stenstam" name="author">
 <meta content="Peter Thomassen" name="author">
 <meta content="
-       This document specifies generalized DNS notifications. 
+       Changes in CDS/CDNSKEY, CSYNC, and other records related to delegation
+maintenance are usually detected through scheduled scans run by the
+consuming party (e.g. top-level domain registry), incurring an
+uncomfortable trade-off between scanning cost and update latency. 
+       A similar problem exists when scheduling zone transfers, and has been
+solved using the well-known DNS NOTIFY mechanism ( ).
+This mechanism enables a primary nameserver to proactively inform
+secondaries about zone changes, allowing the secondary to initiate an
+ad-hoc transfer independently of when the next SOA check would be due. 
+       This document extends the use of DNS NOTIFY beyond conventional zone
+transfer hints, bringing the benefits of ad-hoc notifications to DNS
+delegation maintenance in general.
+Use cases include DNSSEC key rollovers hints via NOTIFY(CDS) and
+NOTIFY(DNSKEY), and quicker changes to a delegation's NS record set
+via NOTIFY(CSYNC). 
        TO BE REMOVED: This document is being collaborated on in Github at:
  https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-dns-notifications .
 The most recent working version of the document, open issues, etc. should all be
@@ -1044,7 +1058,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Stenstam &amp; Thomassen</td>
-<td class="center">Expires 30 May 2023</td>
+<td class="center">Expires 1 June 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1057,12 +1071,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-thomassen-dnsop-generalized-dns-notifications-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-11-26" class="published">26 November 2022</time>
+<time datetime="2022-11-28" class="published">28 November 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-05-30">30 May 2023</time></dd>
+<dd class="expires"><time datetime="2023-06-01">1 June 2023</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1079,11 +1093,25 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <h1 id="title">Generalized DNS Notifications</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document specifies generalized DNS notifications.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">TO BE REMOVED: This document is being collaborated on in Github at:
+<p id="section-abstract-1">Changes in CDS/CDNSKEY, CSYNC, and other records related to delegation
+maintenance are usually detected through scheduled scans run by the
+consuming party (e.g. top-level domain registry), incurring an
+uncomfortable trade-off between scanning cost and update latency.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">A similar problem exists when scheduling zone transfers, and has been
+solved using the well-known DNS NOTIFY mechanism (<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>).
+This mechanism enables a primary nameserver to proactively inform
+secondaries about zone changes, allowing the secondary to initiate an
+ad-hoc transfer independently of when the next SOA check would be due.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">This document extends the use of DNS NOTIFY beyond conventional zone
+transfer hints, bringing the benefits of ad-hoc notifications to DNS
+delegation maintenance in general.
+Use cases include DNSSEC key rollovers hints via NOTIFY(CDS) and
+NOTIFY(DNSKEY), and quicker changes to a delegation's NS record set
+via NOTIFY(CSYNC).<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+<p id="section-abstract-4">TO BE REMOVED: This document is being collaborated on in Github at:
 <a href="https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-dns-notifications">https://github.com/peterthomassen/draft-thomassen-dnsop-generalized-dns-notifications</a>.
 The most recent working version of the document, open issues, etc. should all be
-available there.  The authors (gratefully) accept pull requests.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+available there.  The authors (gratefully) accept pull requests.<a href="#section-abstract-4" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1104,7 +1132,7 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 30 May 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 June 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1222,7 +1250,7 @@ available there.  The authors (gratefully) accept pull requests.<a href="#sectio
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">This document introduces a generalization of the DNS NOTIFY mechanism
-described in RFC 1996.<a href="#section-1-1" class="pilcrow">¶</a></p>
+described in <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Traditional DNS notifications, which are here referred to as
 "NOTIFY(SOA)", are sent from a primary server to a secondary server to
 minimize the latter's convergence time to a new version of the
@@ -1258,7 +1286,7 @@ when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class=
       <h2 id="name-costs-and-dangers-of-slow-c">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-costs-and-dangers-of-slow-c" class="section-name selfRef">Costs and Dangers of Slow Convergence</a>
       </h2>
-<p id="section-2-1">RFC 1996 introduced the concept of a DNS Notify message which was used
+<p id="section-2-1"><span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> introduced the concept of a DNS Notify message which was used
 to improve the convergence time for secondary servers when a DNS zone
 had been updated in the primary. The basic idea was to augment the
 traditional "pull" mechanism (a periodic SOA query) with a "push"
@@ -1297,7 +1325,7 @@ potential brokenness.<a href="#section-2-4" class="pilcrow">¶</a></p>
       <h2 id="name-efficiency-issues-with-dns-">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-efficiency-issues-with-dns-" class="section-name selfRef">Efficiency Issues with DNS Scanning vs. Notification</a>
       </h2>
-<p id="section-3-1">The original problem that RFC 1996 addressed was the problem of
+<p id="section-3-1">The original problem that <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> addressed was the problem of
 optimization between frequent checking for new versions of a zone by a
 secondary and infrequent checking.
 While it is possible to indicate how frequently checks should occur
@@ -1305,8 +1333,8 @@ While it is possible to indicate how frequently checks should occur
 zone changes that fall between checkpoints.
 NOTIFY replaces scheduled scanning with a more efficient mechanism.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">In modern DNS infrastructure there are several new scanning based
-inefficiencies that did not exist at the time of the writing of RFC
-1996.<a href="#section-3-2" class="pilcrow">¶</a></p>
+inefficiencies that did not exist at the time of the writing of
+<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <div id="cds-and-cdnskey-scanners">
 <section id="section-3.1">
         <h3 id="name-cds-and-cdnskey-scanners">
@@ -1372,7 +1400,7 @@ RRset and the controller noticing and re-synchronizing all signers.<a href="#sec
       <h2 id="name-cds-cdnskey-and-csync-notif">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-cds-cdnskey-and-csync-notif" class="section-name selfRef">CDS/CDNSKEY and CSYNC Notifications</a>
       </h2>
-<p id="section-4-1">The RFC 1996 NOTIFY message sends a SOA record in the Query
+<p id="section-4-1">The <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> NOTIFY message sends a SOA record in the Query
 Section. We refer to this as a NOTIFY(SOA).
 By generalizing the concept of DNS NOTIFY it is possible to address
 not only the original inefficiency (primary name server to secondary
@@ -1618,7 +1646,7 @@ zone. See previous section.<a href="#section-9-2" class="pilcrow">¶</a></p>
       <h2 id="name-security-considerations">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-10-1">The original NOTIFY specification (RFC 1996) sidesteps most security
+<p id="section-10-1">The original NOTIFY specification (<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>) sidesteps most security
 issues by not relying on the information in the NOTIFY message in any
 way but instead only use it to set the timer until the next scheduled
 check (for the SOA record) to zero. Therefore it is impossible to
@@ -1647,6 +1675,10 @@ concerns about the impact of unsolicited NOTIFY messages.<a href="#section-10-5"
 <dt id="I-D.wisser-dnssec-automation">[I-D.wisser-dnssec-automation]</dt>
       <dd>
 <span class="refAuthor">Wisser, U.</span> and <span class="refAuthor">S. Huque</span>, <span class="refTitle">"DNSSEC automation"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-wisser-dnssec-automation-03</span>, <time datetime="2022-03-06" class="refDate">6 March 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-wisser-dnssec-automation-03">https://datatracker.ietf.org/doc/html/draft-wisser-dnssec-automation-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC1996">[RFC1996]</dt>
+      <dd>
+<span class="refAuthor">Vixie, P.</span>, <span class="refTitle">"A Mechanism for Prompt Notification of Zone Changes (DNS NOTIFY)"</span>, <span class="seriesInfo">RFC 1996</span>, <span class="seriesInfo">DOI 10.17487/RFC1996</span>, <time datetime="1996-08" class="refDate">August 1996</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc1996">https://www.rfc-editor.org/rfc/rfc1996</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
       <dd>
