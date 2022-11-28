@@ -94,7 +94,8 @@ Table of Contents
    9.  Out of Scope
    10. Security Considerations
    11. IANA Considerations
-   12. Normative References
+   12. Acknowledgements
+   13. Normative References
    Appendix A.  Change History (to be removed before publication)
    Authors' Addresses
 
@@ -492,7 +493,11 @@ Table of Contents
    [TODO: (1) Detail out use cases? (2) Add entries via RFC or web
    form?]
 
-12.  Normative References
+12.  Acknowledgements
+
+   Christian Elmerot
+
+13.  Normative References
 
    [I-D.wisser-dnssec-automation]
               Wisser, U. and S. Huque, "DNSSEC automation", Work in
